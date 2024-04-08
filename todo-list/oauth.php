@@ -123,6 +123,7 @@ if ($db->connect_error) {
 $username = $user->login;
 
 // Step 2: Prepare an SQL SELECT statement to check if the username already exists
+
 $stmt = $db->prepare('SELECT id, username FROM oauth_user WHERE username = ?');
 $stmt->bind_param('s', $username);
 
@@ -143,7 +144,7 @@ if ($stmt->num_rows > 0) {
     exit();
 } else {
     // Username does not exist, prepare an SQL INSERT statement
-    $stmt = $db->prepare('INSERT INTO oauth_user (oauth_provider, oauth_uid, name, username, email, user_id) VALUES (?, ?, ?, ?, ?, 2)');
+    $stmt = $db->prepare('INSERT INTO oauth_user (oauth_provider, oauth_uid, name, username, email, id, role_id) VALUES (?, ?, ?, ?, ?, ?, 2)');
 
     if (!$stmt) {
         die('Failed to prepare statement: ' . $db->error);
@@ -154,8 +155,9 @@ if ($stmt->num_rows > 0) {
     $oauth_uid = $user->id;
     $name = $user->name;
     $email = $user->email;
+    $role_id = 2;
 
-    if (!$stmt->bind_param('sssss', $oauth_provider, $oauth_uid, $name, $username, $email)) {
+    if (!$stmt->bind_param('sssssi', $oauth_provider, $oauth_uid, $name, $username, $email, $role_id)) {
         die('Failed to bind parameters: ' . $stmt->error);
     }
 
